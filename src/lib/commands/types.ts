@@ -8,6 +8,8 @@ export interface OutputLine {
   content: ReactNode;
   delay?: number;
   isPrompt?: boolean;
+  isDownloadButton?: boolean;
+  isExternalLink?: string;
 }
 
 export interface CommandDef {

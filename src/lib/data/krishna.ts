@@ -58,7 +58,7 @@ export const projects = [
       '50 GB+ data processed',
       '100% recoverability with checkpointing',
     ],
-    github: 'https://github.com/Krishna09Bhardwaj',
+    github: 'https://github.com/Krishna09Bhardwaj/real-time-data-pipeline',
   },
   {
     id: 'dashboard',

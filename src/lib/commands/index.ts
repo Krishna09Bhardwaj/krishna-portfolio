@@ -57,7 +57,11 @@ export const commandRegistry = new Map<string, CommandDef>([
         if (args[0] === 'resume') return RESUME_LINES;
         if (args[0] === 'research') return RESEARCH_LINES;
         if (args[0] === 'certifications') return makeCertLines();
-        return [err(`  cat: ${args[0] ?? '<missing>'}:  No such file or directory`)];
+        return [
+          { id: `cat-u-${Date.now()}`, type: 'system' as const, content: '  Usage: cat <file>' },
+          { id: `cat-u2-${Date.now()}`, type: 'output' as const, content: '  Available files: resume · research · certifications' },
+          { id: `cat-u3-${Date.now()}`, type: 'output' as const, content: ' ' },
+        ];
       },
     },
   ],
