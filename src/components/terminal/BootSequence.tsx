@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTerminalStore } from '@/store/terminalStore';
 
-const ASCII_ART = String.raw`
+// Full block-letter art — 54 chars wide (KRISHNA) + 51 chars wide (BHARDWAJ)
+// Rendered at 8.5px so it fits on any screen ≥ 480px wide
+const ASCII_ART_FULL = String.raw`
  ██╗  ██╗██████╗ ██╗███████╗██╗  ██╗███╗   ██╗ █████╗
  ██║ ██╔╝██╔══██╗██║██╔════╝██║  ██║████╗  ██║██╔══██╗
  █████╔╝ ██████╔╝██║███████╗███████║██╔██╗ ██║███████║
@@ -17,6 +19,17 @@ const ASCII_ART = String.raw`
  ██╔══██╗██╔══██║██╔══██║██╔══██╗██║  ██║     ██║
  ██████╔╝██║  ██║██║  ██║██║  ██║██████╔╝     ██║
  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝      ╚═╝`.trim();
+
+// Narrow fallback for mobile / very small viewports
+const ASCII_ART_NARROW = `
+  ╔═══════════════════════════════════════════════════╗
+  ║                                                   ║
+  ║   K R I S H N A   B H A R D W A J                ║
+  ║                                                   ║
+  ║   Data Engineer  ·  IEEE Researcher  ·  2026      ║
+  ║   Final Year CSE  @  Chandigarh University        ║
+  ║                                                   ║
+  ╚═══════════════════════════════════════════════════╝`.trim();
 
 interface BootLine {
   text: string;
@@ -38,26 +51,32 @@ function getBootLines(): BootLine[] {
   });
   return [
     { text: 'Portfolio OS v2026.04  —  Booting...', delay: 0, isFaint: true },
-    { text: 'CPU: DataEngineerCore™ (PySpark-Optimised, 10k events/s)', delay: 100, isFaint: true },
+    { text: 'CPU: DataEngineerCore™  (PySpark-Optimised, 10k events/s)', delay: 100, isFaint: true },
     { text: 'Memory check: 50 GB+ pipeline buffer  [  OK  ]', delay: 220, isFaint: true },
     { text: 'Loading modules: kafka.ko  airflow.ko  snowflake.ko  [  OK  ]', delay: 360, isFaint: true },
     { text: 'Mounting: /projects  /skills  /experience  /research  [  OK  ]', delay: 500, isFaint: true },
     { text: 'Starting network interfaces...  [  OK  ]', delay: 640, isFaint: true },
     { text: '', delay: 760 },
-    { text: ASCII_ART, delay: 880, isAscii: true },
-    { text: '', delay: 1300 },
-    { text: `Last login: ${ts} IST on ttys001`, delay: 1420 },
-    { text: '', delay: 1540 },
-    { text: "  Type 'help' to see all commands, or 'ls' to get started.", delay: 1640 },
-    { text: '', delay: 1760 },
+    { text: '__ASCII__', delay: 880, isAscii: true },
+    { text: '', delay: 1320 },
+    { text: `Last login: ${ts} IST on ttys001`, delay: 1440 },
+    { text: '', delay: 1560 },
+    { text: "  Type 'help' to see all commands, or 'ls' to get started.", delay: 1660 },
+    { text: '', delay: 1780 },
   ];
 }
 
 export default function BootSequence() {
   const [visibleCount, setVisibleCount] = useState(0);
+  // Use full art on screens ≥ 600px, narrow box on mobile
+  const [isWide, setIsWide] = useState(true);
   const setBooting = useTerminalStore((s) => s.setBooting);
 
   const bootLines = getBootLines();
+
+  useEffect(() => {
+    setIsWide(window.innerWidth >= 600);
+  }, []);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -76,25 +95,54 @@ export default function BootSequence() {
   }, []);
 
   return (
-    <div className="terminal-output">
-      {bootLines.slice(0, visibleCount).map((bl, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.12 }}
-          className={[
-            'text-sm leading-relaxed font-mono whitespace-pre',
-            bl.isAscii
-              ? 'text-[#00ff88] text-[10px] leading-tight'
-              : bl.isFaint
-              ? 'text-[#4fc3f7] opacity-70'
-              : 'text-[#e0e0e0]',
-          ].join(' ')}
-        >
-          {bl.text || ' '}
-        </motion.div>
-      ))}
+    <div
+      className="terminal-output"
+      style={{ overflowX: isWide ? 'auto' : 'hidden' }}
+    >
+      {bootLines.slice(0, visibleCount).map((bl, i) => {
+        if (bl.isAscii) {
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.25 }}
+              style={{
+                // Inline style — guaranteed to apply regardless of Tailwind build
+                fontSize: isWide ? '8.5px' : '13px',
+                lineHeight: isWide ? '1.22' : '1.55',
+                color: '#00ff88',
+                fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+                whiteSpace: 'pre',
+                display: 'block',
+                overflowX: 'auto',
+                textShadow: '0 0 8px rgba(0,255,136,0.55)',
+              }}
+            >
+              {isWide ? ASCII_ART_FULL : ASCII_ART_NARROW}
+            </motion.div>
+          );
+        }
+
+        return (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.12 }}
+            style={{
+              fontSize: '14px',
+              lineHeight: '1.65',
+              fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+              whiteSpace: 'pre',
+              color: bl.isFaint ? '#4fc3f7' : '#e0e0e0',
+              opacity: bl.isFaint ? 0.75 : 1,
+            }}
+          >
+            {bl.text || ' '}
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
