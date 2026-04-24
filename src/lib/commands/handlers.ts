@@ -67,18 +67,35 @@ export const HELP_LINES: OutputLine[] = [
 
 export const WHOIS_LINES: OutputLine[] = [
   blank(),
-  sys('╔════════════════════════════════════════════════════════════╗'),
-  sys('║                   KRISHNA BHARDWAJ                         ║'),
-  sys('╚════════════════════════════════════════════════════════════╝'),
-  blank(),
-  line(`  Role        :  ${bio.role}`),
-  line(`  Education   :  ${bio.education}`),
-  line(`  Location    :  ${bio.location}`),
-  line(`  Email       :  ${bio.email}`),
-  line(`  Phone       :  ${bio.phone}`),
+  line('  Name       :  Krishna Bhardwaj'),
+  line('  Currently  :  Final Year CSE @ Chandigarh University'),
+  line('  Fuel       :  Coffee ☕ + Deadlines ⚡'),
+  line('  Status     :  Building. Breaking. Fixing. Repeating.'),
+  line('  Location   :  Chandigarh, Punjab, India'),
+  line('  Email      :  krishna09bhardwaj@gmail.com'),
+  line('  Phone      :  +91 70730-70311'),
   blank(),
   sys('  Summary:'),
-  ...bio.summary.map((s) => line(`  ${s}`)),
+  blank(),
+  line("  I don't wait for pressure — I perform because of it."),
+  blank(),
+  line('  Final-year CS student who got obsessed with the question:'),
+  line('  "What happens to data at scale?" — and never stopped digging.'),
+  blank(),
+  line('  I build systems that move data the way it should be moved —'),
+  line('  fast, clean, and without excuses. Kafka, PySpark, Snowflake,'),
+  line('  Airflow, Docker — not buzzwords on my resume,'),
+  line('  tools I\'ve actually burned hours on.'),
+  blank(),
+  line('  Published in IEEE before most people finish their first internship.'),
+  line('  Currently building real-world pipelines at JineeGreenCard'),
+  line('  while the rest of the semester is still happening.'),
+  blank(),
+  line('  I run on coffee, late nights, and the quiet satisfaction'),
+  line('  of a pipeline that doesn\'t break.'),
+  blank(),
+  line('  If you\'re looking for someone who shows up when things get hard —'),
+  line('  you just found them.'),
   blank(),
 ];
 
@@ -176,36 +193,47 @@ export function makeExperienceLines(): OutputLine[] {
 
 // ── research ──────────────────────────────────────────────────────────────────
 
+// Box width: "  │" + 63 chars + "│" = 68 chars total per line
+// Inner content area: 63 chars (pad with spaces to fill)
+const RB = '  │';
+const RT = '  ┌─────────────────────────────────────────────────────────────┐';
+const RM = '  ├─────────────────────────────────────────────────────────────┤';
+const RX = '  └─────────────────────────────────────────────────────────────┘';
+function rline(content: string): string {
+  // Pad or trim content to exactly 63 chars then close border
+  return `${RB}${content.padEnd(63)}│`;
+}
+
 export const RESEARCH_LINES: OutputLine[] = [
   blank(),
-  sys('  ┌─────────────────────────────────────────────────────────────┐'),
-  sys('  │  IEEE PUBLISHED RESEARCH                                    │'),
-  sys('  ├─────────────────────────────────────────────────────────────┤'),
-  sys('  │                                                             │'),
-  sys('  │  Title   :  Predicting Network Condition Events Using      │'),
-  sys('  │             Supervised Machine Learning and Network        │'),
-  sys('  │             Analysis Techniques                             │'),
-  sys('  │                                                             │'),
-  sys('  │  Publisher : IEEE                                           │'),
-  sys('  │  Conference: ACROSET 2025                                   │'),
-  sys('  │  Status    : Peer-Reviewed & Published — February 2025     │'),
-  sys('  │                                                             │'),
-  line('  │  What it means in plain English:                           │'),
-  line('  │  Predicted when networks would choke under load —          │'),
-  line('  │  before they actually did.                                  │'),
-  line('  │  Real data. Real model. Real results.                       │'),
-  line('  │  Published in one of the most respected                     │'),
-  line('  │  engineering bodies in the world.                           │'),
-  sys('  │                                                             │'),
-  sys(`  │  DOI     : ${research.doi}              │`),
+  sys(RT),
+  sys(rline('  IEEE PUBLISHED RESEARCH')),
+  sys(RM),
+  sys(rline('')),
+  sys(rline('  Title   :  Predicting Network Condition Events Using')),
+  sys(rline('             Supervised Machine Learning and Network')),
+  sys(rline('             Analysis Techniques')),
+  sys(rline('')),
+  sys(rline('  Publisher : IEEE')),
+  sys(rline('  Conference: ACROSET 2025')),
+  sys(rline('  Status    : Peer-Reviewed & Published — February 2025')),
+  sys(rline('')),
+  line(rline('  What it means in plain English:')),
+  line(rline('  Predicted when networks would choke under load —')),
+  line(rline('  before they actually did.')),
+  line(rline('  Real data. Real model. Real results.')),
+  line(rline('  Published in one of the most respected')),
+  line(rline('  engineering bodies in the world.')),
+  sys(rline('')),
+  sys(rline(`  DOI  : ${research.doi}`)),
   {
     id: uid(),
     type: 'success',
-    content: `  │  Link    : https://doi.org/${research.doi} │`,
+    content: rline(`  Link : https://doi.org/${research.doi}`),
     isExternalLink: `https://doi.org/${research.doi}`,
   },
-  sys('  │                                                             │'),
-  sys('  └─────────────────────────────────────────────────────────────┘'),
+  sys(rline('')),
+  sys(RX),
   blank(),
 ];
 

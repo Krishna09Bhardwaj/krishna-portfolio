@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTerminalStore } from '@/store/terminalStore';
 
-// Full block-letter art — 54 chars wide (KRISHNA) + 51 chars wide (BHARDWAJ)
-// Rendered at 8.5px so it fits on any screen ≥ 480px wide
-const ASCII_ART_FULL = String.raw`
+// Block-letter ASCII — hand-verified, every row 60 chars wide
+// KRISHNA (6 rows) then blank then BHARDWAJ (6 rows)
+const ASCII_ART = `
  ██╗  ██╗██████╗ ██╗███████╗██╗  ██╗███╗   ██╗ █████╗
  ██║ ██╔╝██╔══██╗██║██╔════╝██║  ██║████╗  ██║██╔══██╗
  █████╔╝ ██████╔╝██║███████╗███████║██╔██╗ ██║███████║
@@ -13,14 +13,13 @@ const ASCII_ART_FULL = String.raw`
  ██║  ██╗██║  ██║██║███████║██║  ██║██║ ╚████║██║  ██║
  ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝
 
- ██████╗ ██╗  ██╗ █████╗ ██████╗ ██████╗      ██╗
- ██╔══██╗██║  ██║██╔══██╗██╔══██╗██╔══██╗    ███║
- ██████╔╝███████║███████║██████╔╝██║  ██║    ╚██║
- ██╔══██╗██╔══██║██╔══██║██╔══██╗██║  ██║     ██║
- ██████╔╝██║  ██║██║  ██║██║  ██║██████╔╝     ██║
- ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝      ╚═╝`.trim();
+ ██████╗ ██╗  ██╗ █████╗ ██████╗ ██████╗ ██╗    ██╗ █████╗      ██╗
+ ██╔══██╗██║  ██║██╔══██╗██╔══██╗██╔══██╗██║    ██║██╔══██╗     ██║
+ ██████╔╝███████║███████║██████╔╝██║  ██║██║ █╗ ██║███████║     ██║
+ ██╔══██╗██╔══██║██╔══██║██╔══██╗██║  ██║██║███╗██║██╔══██║██   ██║
+ ██████╔╝██║  ██║██║  ██║██║  ██║██████╔╝╚███╔███╔╝██║  ██║╚█████╔╝
+ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚══╝╚══╝ ╚═╝  ╚═╝ ╚════╝`.trim();
 
-// Narrow fallback for mobile / very small viewports
 const ASCII_ART_NARROW = `
   ╔═══════════════════════════════════════════════════╗
   ║                                                   ║
@@ -34,8 +33,8 @@ const ASCII_ART_NARROW = `
 interface BootLine {
   text: string;
   delay: number;
+  tag?: string;
   isAscii?: boolean;
-  isFaint?: boolean;
 }
 
 function getBootLines(): BootLine[] {
@@ -50,25 +49,27 @@ function getBootLines(): BootLine[] {
     second: '2-digit',
   });
   return [
-    { text: 'Portfolio OS v2026.04  —  Booting...', delay: 0, isFaint: true },
-    { text: 'CPU: DataEngineerCore™  (PySpark-Optimised, 10k events/s)', delay: 100, isFaint: true },
-    { text: 'Memory check: 50 GB+ pipeline buffer  [  OK  ]', delay: 220, isFaint: true },
-    { text: 'Loading modules: kafka.ko  airflow.ko  snowflake.ko  [  OK  ]', delay: 360, isFaint: true },
-    { text: 'Mounting: /projects  /skills  /experience  /research  [  OK  ]', delay: 500, isFaint: true },
-    { text: 'Starting network interfaces...  [  OK  ]', delay: 640, isFaint: true },
-    { text: '', delay: 760 },
-    { text: '__ASCII__', delay: 880, isAscii: true },
-    { text: '', delay: 1320 },
-    { text: `Last login: ${ts} IST on ttys001`, delay: 1440 },
-    { text: '', delay: 1560 },
-    { text: "  Type 'help' to see all commands, or 'ls' to get started.", delay: 1660 },
-    { text: '', delay: 1780 },
+    { text: 'Booting portfolio.sh...',                     tag: '[ OK ]',      delay: 0 },
+    { text: 'Loading: krishna.config',                     tag: '[ OK ]',      delay: 160 },
+    { text: 'Mounting: /projects /skills /experience',     tag: '[ OK ]',      delay: 320 },
+    { text: 'Checking caffeine levels...',                  tag: '[ HIGH ]',    delay: 480 },
+    { text: 'Verifying deadline pressure...',              tag: '[ OPTIMAL ]', delay: 640 },
+    { text: 'IEEE paper found in /research',               tag: '[ OK ]',      delay: 800 },
+    { text: 'Internship active — JineeGreenCard',          tag: '[ LIVE ]',    delay: 960 },
+    { text: 'Warning: This terminal bites back.',          tag: '[ !! ]',      delay: 1120 },
+    { text: 'System ready.',                               tag: '',            delay: 1280 },
+    { text: '',                                                                delay: 1380 },
+    { text: '__ASCII__',                                   isAscii: true,      delay: 1460 },
+    { text: '',                                                                delay: 1880 },
+    { text: `Last login: ${ts} IST on ttys001`,                               delay: 1980 },
+    { text: '',                                                                delay: 2080 },
+    { text: "  Type 'help' to see all commands, or 'ls' to get started.",     delay: 2160 },
+    { text: '',                                                                delay: 2260 },
   ];
 }
 
 export default function BootSequence() {
   const [visibleCount, setVisibleCount] = useState(0);
-  // Use full art on screens ≥ 600px, narrow box on mobile
   const [isWide, setIsWide] = useState(true);
   const setBooting = useTerminalStore((s) => s.setBooting);
 
@@ -106,40 +107,49 @@ export default function BootSequence() {
               key={i}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: 0.3 }}
               style={{
-                // Inline style — guaranteed to apply regardless of Tailwind build
-                fontSize: isWide ? '8.5px' : '13px',
-                lineHeight: isWide ? '1.22' : '1.55',
+                fontSize: isWide ? '8px' : '13px',
+                lineHeight: isWide ? '1.2' : '1.55',
                 color: '#00ff88',
                 fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
                 whiteSpace: 'pre',
                 display: 'block',
                 overflowX: 'auto',
                 textShadow: '0 0 8px rgba(0,255,136,0.55)',
+                marginBottom: '4px',
               }}
             >
-              {isWide ? ASCII_ART_FULL : ASCII_ART_NARROW}
+              {isWide ? ASCII_ART : ASCII_ART_NARROW}
             </motion.div>
           );
         }
+
+        const tagColor = bl.tag === '[ !! ]' ? '#ff6b6b'
+          : bl.tag === '[ HIGH ]' || bl.tag === '[ OPTIMAL ]' || bl.tag === '[ LIVE ]' ? '#ffd54f'
+          : '#00ff88';
 
         return (
           <motion.div
             key={i}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.12 }}
+            transition={{ duration: 0.1 }}
             style={{
               fontSize: '14px',
               lineHeight: '1.65',
               fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
               whiteSpace: 'pre',
-              color: bl.isFaint ? '#4fc3f7' : '#e0e0e0',
-              opacity: bl.isFaint ? 0.75 : 1,
+              color: bl.text === '' ? 'transparent' : '#e0e0e0',
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '1rem',
             }}
           >
-            {bl.text || ' '}
+            {bl.text || ' '}
+            {bl.tag ? (
+              <span style={{ color: tagColor, flexShrink: 0 }}>{bl.tag}</span>
+            ) : null}
           </motion.div>
         );
       })}

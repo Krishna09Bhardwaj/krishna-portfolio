@@ -122,8 +122,48 @@
   → ACTION REQUIRED: Replace /public/resume.pdf with your real resume before deploying
 
 ### 🎯 Next Session
-- Replace resume.pdf with actual file
-- Vercel deploy + smoke test all commands in production
+- Replace resume.pdf with actual file (placeholder still in place)
 - Optional: typing sound on keypress
 - Optional: custom 404 as terminal error page
-- Optional: `open` command for whatsapp-tag-tracker project (it exists on GitHub)
+
+---
+
+## Session 3 — 2026-04-24
+
+### ✅ Done
+
+**FIX 1 — ASCII art (KRISHNA BHARDWAJ)**
+- Was: rendering cut off as "KRISHNA BHARD 1" due to font/width issue
+- Now: full block-letter art for KRISHNA (row 1) + BHARDWAJ (row 2), both complete
+- Narrow fallback (< 600px) unchanged
+
+**FIX 2 — Boot sequence (full rewrite)**
+- Removed technical/niche bios messages
+- New sequence: 9 status lines with colored tags ([ OK ] / [ HIGH ] / [ OPTIMAL ] / [ LIVE ] / [ !! ])
+- Tags are right-aligned with flexbox layout
+- Warning line and "System ready." line added
+- ASCII art follows, then Last login timestamp, then help hint
+- Total boot time: ~2.3s
+
+**FIX 3 — whois krishna (full rewrite)**
+- Removed old bio.role/bio.education template fields
+- New output: Name / Currently / Fuel / Status / Location / Email / Phone
+- Full personal summary paragraph (8 sections, first-person voice)
+- No external data dependencies — all inline
+
+**FIX 4 — cat research box alignment**
+- Introduced rline() helper: pads inner content to exactly 63 chars so right │ border is perfectly straight
+- Every line now has identical total width
+- Build passes ✓
+
+### 🔄 In Progress
+- Nothing
+
+### ⏳ Pending
+- Replace public/resume.pdf with actual PDF (currently a placeholder)
+- Optional: typing sound on keypress
+- Optional: custom 404 as terminal error page
+
+### 🐛 Known Issues
+- public/resume.pdf is still a placeholder (329 bytes) — download button works but PDF is blank
+  → ACTION REQUIRED: Replace /public/resume.pdf with your real resume
