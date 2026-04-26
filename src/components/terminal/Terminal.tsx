@@ -175,6 +175,24 @@ export default function Terminal() {
           <BootSequence />
         ) : (
           <>
+            {/* Glass title bar */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 14px',
+              borderBottom: '1px solid var(--glass-border)',
+              background: 'rgba(255,255,255,0.02)',
+              flexShrink: 0,
+            }}>
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff6b6b', display: 'inline-block', opacity: 0.85 }} />
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#fbbf24', display: 'inline-block', opacity: 0.85 }} />
+              <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#00ff9f', display: 'inline-block', opacity: 0.85 }} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--fg-dim)', marginLeft: 10 }}>
+                krishna@portfolio: ~
+              </span>
+            </div>
+
             <div className="terminal-output">
               {lines.map((line, i) => (
                 <OutputLineComponent
