@@ -5,6 +5,7 @@ import {
   projects,
   experience,
   research,
+  certifications,
 } from '@/lib/data/krishna';
 
 let idCounter = 0;
@@ -12,10 +13,7 @@ function uid(): string {
   return `line-${++idCounter}-${Date.now()}`;
 }
 
-function line(
-  content: string,
-  type: OutputLine['type'] = 'output',
-): OutputLine {
+function line(content: string, type: OutputLine['type'] = 'output'): OutputLine {
   return { id: uid(), type, content };
 }
 
@@ -31,7 +29,16 @@ function ok(content: string): OutputLine {
   return { id: uid(), type: 'success', content };
 }
 
-// ── help / ls ────────────────────────────────────────────────────────────────
+// ── Box helpers (63-char inner width, shared by research / certs / resume) ────
+const BOX_TOP = '  ┌─────────────────────────────────────────────────────────────┐';
+const BOX_MID = '  ├─────────────────────────────────────────────────────────────┤';
+const BOX_BOT = '  └─────────────────────────────────────────────────────────────┘';
+const BOX_L   = '  │';
+function bl(content: string): string {
+  return `${BOX_L}${content.padEnd(63)}│`;
+}
+
+// ── help ──────────────────────────────────────────────────────────────────────
 
 export const HELP_LINES: OutputLine[] = [
   blank(),
@@ -58,48 +65,30 @@ export const HELP_LINES: OutputLine[] = [
   line('  clear               →  Clear terminal'),
   blank(),
   sys('  ── Easter Eggs ───────────────────────────────────────────────'),
-  line('  sudo hire krishna   →  ???'),
+  line('  sudo hire krishna   →  [ you really want to try this one ]'),
   line('  matrix              →  Enter the matrix'),
   blank(),
 ];
 
-// ── whois ─────────────────────────────────────────────────────────────────────
+// ── whois — reads from krishna.ts bio ─────────────────────────────────────────
 
 export const WHOIS_LINES: OutputLine[] = [
   blank(),
-  line('  Name       :  Krishna Bhardwaj'),
+  line(`  Name       :  ${bio.name}`),
   line('  Currently  :  Final Year CSE @ Chandigarh University'),
   line('  Fuel       :  Coffee ☕ + Deadlines ⚡'),
   line('  Status     :  Building. Breaking. Fixing. Repeating.'),
-  line('  Location   :  Chandigarh, Punjab, India'),
-  line('  Email      :  krishna09bhardwaj@gmail.com'),
-  line('  Phone      :  +91 70730-70311'),
+  line(`  Location   :  ${bio.location}`),
+  line(`  Email      :  ${bio.email}`),
+  line(`  Phone      :  ${bio.phone}`),
   blank(),
   sys('  Summary:'),
   blank(),
-  line("  I don't wait for pressure — I perform because of it."),
-  blank(),
-  line('  Final-year CS student who got obsessed with the question:'),
-  line('  "What happens to data at scale?" — and never stopped digging.'),
-  blank(),
-  line('  I build systems that move data the way it should be moved —'),
-  line('  fast, clean, and without excuses. Kafka, PySpark, Snowflake,'),
-  line('  Airflow, Docker — not buzzwords on my resume,'),
-  line('  tools I\'ve actually burned hours on.'),
-  blank(),
-  line('  Published in IEEE before most people finish their first internship.'),
-  line('  Currently building real-world pipelines at JineeGreenCard'),
-  line('  while the rest of the semester is still happening.'),
-  blank(),
-  line('  I run on coffee, late nights, and the quiet satisfaction'),
-  line('  of a pipeline that doesn\'t break.'),
-  blank(),
-  line('  If you\'re looking for someone who shows up when things get hard —'),
-  line('  you just found them.'),
+  ...bio.summary.map((s) => (s === '' ? blank() : line(`  ${s}`))),
   blank(),
 ];
 
-// ── projects list ─────────────────────────────────────────────────────────────
+// ── projects list — reads from krishna.ts projects[] ──────────────────────────
 
 export function makeProjectListLines(): OutputLine[] {
   return [
@@ -107,9 +96,7 @@ export function makeProjectListLines(): OutputLine[] {
     sys('  Projects  —  type "open <id>" for full details'),
     blank(),
     ...projects.map((p) =>
-      line(
-        `  [${p.id.padEnd(10)}]  ${p.name.padEnd(35)}  [${p.date}]`,
-      ),
+      line(`  [${p.id.padEnd(10)}]  ${p.name.padEnd(35)}  [${p.date}]`),
     ),
     blank(),
     sys('  Stacks:'),
@@ -120,7 +107,7 @@ export function makeProjectListLines(): OutputLine[] {
   ];
 }
 
-// ── open project ──────────────────────────────────────────────────────────────
+// ── open project — reads from krishna.ts projects[] ───────────────────────────
 
 export function makeOpenProjectLines(id: string): OutputLine[] {
   const p = projects.find((pr) => pr.id === id.toLowerCase());
@@ -144,23 +131,16 @@ export function makeOpenProjectLines(id: string): OutputLine[] {
     sys('  Metrics:'),
     ...p.metrics.map((m) => ok(`  ✓  ${m}`)),
     blank(),
-    {
-      id: uid(),
-      type: 'success' as const,
-      content: `  GitHub →  ${p.github}`,
-      isExternalLink: p.github,
-    },
+    { id: uid(), type: 'success' as const, content: `  GitHub →  ${p.github}`, isExternalLink: p.github },
     blank(),
   ];
 }
 
-// ── skills ────────────────────────────────────────────────────────────────────
+// ── skills — reads from krishna.ts skills[] ───────────────────────────────────
 
 export function makeSkillsLines(): OutputLine[] {
-  const bar = (pct: number): string => {
-    const filled = Math.round(pct / 5);
-    return '█'.repeat(filled) + '░'.repeat(20 - filled) + `  ${pct}%`;
-  };
+  const bar = (pct: number): string =>
+    '█'.repeat(Math.round(pct / 5)) + '░'.repeat(20 - Math.round(pct / 5)) + `  ${pct}%`;
   return [
     blank(),
     sys('  SKILL TREE'),
@@ -174,7 +154,7 @@ export function makeSkillsLines(): OutputLine[] {
   ];
 }
 
-// ── experience ────────────────────────────────────────────────────────────────
+// ── experience — reads from krishna.ts experience[] ───────────────────────────
 
 export function makeExperienceLines(): OutputLine[] {
   return [
@@ -191,87 +171,130 @@ export function makeExperienceLines(): OutputLine[] {
   ];
 }
 
-// ── research ──────────────────────────────────────────────────────────────────
-
-// Box width: "  │" + 63 chars + "│" = 68 chars total per line
-// Inner content area: 63 chars (pad with spaces to fill)
-const RB = '  │';
-const RT = '  ┌─────────────────────────────────────────────────────────────┐';
-const RM = '  ├─────────────────────────────────────────────────────────────┤';
-const RX = '  └─────────────────────────────────────────────────────────────┘';
-function rline(content: string): string {
-  // Pad or trim content to exactly 63 chars then close border
-  return `${RB}${content.padEnd(63)}│`;
-}
+// ── research — reads from krishna.ts research ─────────────────────────────────
 
 export const RESEARCH_LINES: OutputLine[] = [
   blank(),
-  sys(RT),
-  sys(rline('  IEEE PUBLISHED RESEARCH')),
-  sys(RM),
-  sys(rline('')),
-  sys(rline('  Title   :  Predicting Network Condition Events Using')),
-  sys(rline('             Supervised Machine Learning and Network')),
-  sys(rline('             Analysis Techniques')),
-  sys(rline('')),
-  sys(rline('  Publisher : IEEE')),
-  sys(rline('  Conference: ACROSET 2025')),
-  sys(rline('  Status    : Peer-Reviewed & Published — February 2025')),
-  sys(rline('')),
-  line(rline('  What it means in plain English:')),
-  line(rline('  Predicted when networks would choke under load —')),
-  line(rline('  before they actually did.')),
-  line(rline('  Real data. Real model. Real results.')),
-  line(rline('  Published in one of the most respected')),
-  line(rline('  engineering bodies in the world.')),
-  sys(rline('')),
-  sys(rline(`  DOI  : ${research.doi}`)),
+  sys(BOX_TOP),
+  sys(bl('  IEEE PUBLISHED RESEARCH')),
+  sys(BOX_MID),
+  sys(bl('')),
+  sys(bl('  Title   :  Predicting Network Condition Events Using')),
+  sys(bl('             Supervised Machine Learning and Network')),
+  sys(bl('             Analysis Techniques')),
+  sys(bl('')),
+  sys(bl('  Publisher : IEEE')),
+  sys(bl(`  Conference: ${research.conference}`)),
+  sys(bl(`  Status    : Peer-Reviewed & Published — ${research.date}`)),
+  sys(bl('')),
+  line(bl('  What it means in plain English:')),
+  line(bl('  Predicted when networks would choke under load —')),
+  line(bl('  before they actually did.')),
+  line(bl('  Real data. Real model. Real results.')),
+  line(bl('  Published in one of the most respected')),
+  line(bl('  engineering bodies in the world.')),
+  sys(bl('')),
+  sys(bl(`  DOI  : ${research.doi}`)),
   {
     id: uid(),
     type: 'success',
-    content: rline(`  Link : https://doi.org/${research.doi}`),
+    content: bl(`  Link : https://doi.org/${research.doi}`),
     isExternalLink: `https://doi.org/${research.doi}`,
   },
-  sys(rline('')),
-  sys(RX),
+  sys(bl('')),
+  sys(BOX_BOT),
   blank(),
 ];
 
-// ── certifications ────────────────────────────────────────────────────────────
+// ── certifications — reads from krishna.ts certifications[] ──────────────────
 
 export function makeCertLines(): OutputLine[] {
+  const rows: OutputLine[] = [
+    blank(),
+    sys(BOX_TOP),
+    sys(bl('  CERTIFICATIONS')),
+    sys(BOX_MID),
+  ];
+
+  certifications.forEach((cert) => {
+    rows.push(sys(bl('')));
+    rows.push(ok(bl(`  ✅  ${cert.name}`)));
+    rows.push(line(bl(`      Issued by  : ${cert.issuer}`)));
+    if (cert.validUntil) {
+      rows.push(line(bl(`      Valid until: ${cert.validUntil}`)));
+    } else {
+      rows.push(line(bl('      Status     : Completed')));
+    }
+    rows.push(line(bl(`      ${cert.description}`)));
+  });
+
+  rows.push(sys(bl('')));
+  rows.push(sys(bl('  🔄  More certifications incoming — be patient.')));
+  rows.push(sys(bl('      The stack is still being conquered.')));
+  rows.push(sys(bl('')));
+  rows.push(sys(BOX_BOT));
+  rows.push(blank());
+  return rows;
+}
+
+// ── resume — derives everything from krishna.ts ───────────────────────────────
+// Update krishna.ts and this auto-updates when you redeploy.
+
+export function makeResumeLines(): OutputLine[] {
+  const exp = experience[0];
+
+  // Build stack from Languages + Data Platforms skill categories
+  const langItems   = skills.find((s) => s.category === 'Languages')?.items ?? [];
+  const dataItems   = skills.find((s) => s.category === 'Data Platforms')?.items ?? [];
+  const infraItems  = skills.find((s) => s.category === 'Infra & DevOps')?.items.slice(0, 2) ?? [];
+  const allStack    = [...langItems, ...dataItems, ...infraItems];
+  const stack1      = allStack.slice(0, 5).join(' · ');
+  const stack2      = allStack.slice(5, 9).join(' · ');
+
+  const ghShort = bio.github.replace('https://', '');
+  const liShort = bio.linkedin.replace('https://', '');
+
+  const certRows = certifications.slice(0, 3).map((c) =>
+    ok(bl(`  ✅  ${c.name}`)),
+  );
+
   return [
     blank(),
-    sys('  ┌─────────────────────────────────────────────────────────────┐'),
-    sys('  │  CERTIFICATIONS                                             │'),
-    sys('  ├─────────────────────────────────────────────────────────────┤'),
-    sys('  │                                                             │'),
-    ok( '  │  ✅  Oracle OCI Generative AI Certified Professional        │'),
-    line('  │      Issued by  : Oracle                                    │'),
-    line('  │      Valid until: July 2026                                 │'),
-    line('  │      What it means: Certified to build and work            │'),
-    line('  │      with enterprise-grade Gen AI on Oracle Cloud           │'),
-    sys('  │                                                             │'),
-    ok( '  │  ✅  Meta Data Analyst                                      │'),
-    line('  │      Issued by  : Meta via Coursera                        │'),
-    line('  │      Status     : Completed                                 │'),
-    line('  │      What it means: End-to-end data analysis —             │'),
-    line('  │      from raw data to business decisions                    │'),
-    sys('  │                                                             │'),
-    ok( '  │  ✅  Python Data Analytics                                  │'),
-    line('  │      Status     : Completed                                 │'),
-    line('  │      What it means: Data wrangling, analysis               │'),
-    line('  │      and insight generation using Python                    │'),
-    sys('  │                                                             │'),
-    ok( '  │  ✅  Data Science at Scale                                  │'),
-    line('  │      Status     : Completed                                 │'),
-    line('  │      What it means: Large-scale data processing            │'),
-    line('  │      and scalable ML pipelines                              │'),
-    sys('  │                                                             │'),
-    sys('  │  🔄  More certifications incoming — be patient.            │'),
-    sys('  │      The stack is still being conquered.                    │'),
-    sys('  │                                                             │'),
-    sys('  └─────────────────────────────────────────────────────────────┘'),
+    sys(BOX_TOP),
+    sys(bl(`  ${bio.name}`)),
+    sys(bl(`  ${bio.role}`)),
+    sys(BOX_MID),
+    sys(bl('')),
+    line(bl(`  Education  :  ${bio.education}`)),
+    line(bl(`               ${bio.educationUniversity}`)),
+    line(bl(`               ${bio.educationPeriod}  |  CGPA: ${bio.cgpa}`)),
+    sys(bl('')),
+    line(bl(`  Experience :  ${exp.role}`)),
+    line(bl(`               ${exp.company}  |  ${exp.period}`)),
+    sys(bl('')),
+    line(bl(`  Stack      :  ${stack1}`)),
+    ...(stack2 ? [line(bl(`               ${stack2}`))] : []),
+    sys(bl('')),
+    line(bl('  Research   :  IEEE Published — Network Congestion')),
+    line(bl('               Prediction using Machine Learning')),
+    line(bl(`               DOI: ${research.doi}`)),
+    sys(bl('')),
+    sys(bl('  Certified  :')),
+    ...certRows,
+    line(bl('               More incoming — stay tuned 🔄')),
+    sys(bl('')),
+    sys(bl(`  GitHub     :  ${ghShort}`)),
+    sys(bl(`  LinkedIn   :  ${liShort}`)),
+    sys(bl('')),
+    sys(BOX_MID),
+    {
+      id: uid(),
+      type: 'success',
+      content: bl('  [ 📄 Download Full Resume — PDF ]'),
+      isDownloadButton: true,
+    },
+    ok(bl('  Clicking download? Good taste.')),
+    sys(BOX_BOT),
     blank(),
   ];
 }
@@ -294,18 +317,11 @@ export const CONTACT_LINES: OutputLine[] = [
 // ── uptime ────────────────────────────────────────────────────────────────────
 
 export function makeUptimeLines(): OutputLine[] {
-  const start = new Date('2019-06-01');
-  const now = new Date();
-  const ms = now.getTime() - start.getTime();
-  const years = Math.floor(ms / (1000 * 60 * 60 * 24 * 365));
-  const months = Math.floor(
-    (ms % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30),
-  );
   return [
     blank(),
-    line(`  krishna@portfolio — uptime: ${years} years, ${months} months`),
-    line('  System: online since first line of Python  (2019)'),
-    ok('  Status: currently building real-time data systems'),
+    line('  krishna@portfolio — uptime: every late night since 2023'),
+    line('  System   : online since first "hello world" hit different'),
+    ok('  Status   : deadline active — performing as expected'),
     blank(),
   ];
 }
@@ -345,11 +361,11 @@ export const HIRE_LINES: OutputLine[] = [
   blank(),
   line('  Initialising hire sequence...'),
   blank(),
-  line(`  Candidate     :  Krishna Bhardwaj`),
-  line(`  Clearance     :  Data Engineering · Analytics · Automation`),
-  line(`  Pipeline      :  Real-Time · Fault-Tolerant · Production-Grade`),
-  ok( `  Research      :  IEEE Published ✅`),
-  line(`  Status        :  Available from June 2026`),
+  line('  Candidate     :  Krishna Bhardwaj'),
+  line('  Clearance     :  Data Engineering · Analytics · Automation'),
+  line('  Pipeline      :  Real-Time · Fault-Tolerant · Production-Grade'),
+  ok( '  Research      :  IEEE Published ✅'),
+  line('  Status        :  Available from June 2026'),
   blank(),
   ok('  You just made a great decision.'),
   blank(),
@@ -368,48 +384,5 @@ export const SSH_LINES: OutputLine[] = [
   ok('  Connection established!'),
   blank(),
   line('  Opening contact form...'),
-  blank(),
-];
-
-// ── resume ────────────────────────────────────────────────────────────────────
-
-export const RESUME_LINES: OutputLine[] = [
-  blank(),
-  sys('  ┌─────────────────────────────────────────────────────────────┐'),
-  sys('  │  KRISHNA BHARDWAJ                                           │'),
-  sys('  │  Data Engineering & Analytics                               │'),
-  sys('  ├─────────────────────────────────────────────────────────────┤'),
-  sys('  │                                                             │'),
-  line('  │  Education  :  B.Tech CSE — Big Data Analytics             │'),
-  line('  │                Chandigarh University                        │'),
-  line('  │                2022 – June 2026  |  CGPA: 7.38             │'),
-  sys('  │                                                             │'),
-  line('  │  Experience :  Software Developer Intern                    │'),
-  line('  │                JineeGreenCard  |  Feb 2026 – Present        │'),
-  sys('  │                                                             │'),
-  line('  │  Stack      :  Python · SQL · Kafka · PySpark              │'),
-  line('  │                Airflow · Snowflake · Docker · Power BI      │'),
-  sys('  │                                                             │'),
-  line('  │  Research   :  IEEE Published — Network Congestion          │'),
-  line('  │                Prediction using Machine Learning            │'),
-  line(`  │                DOI: ${research.doi}     │`),
-  sys('  │                                                             │'),
-  ok( '  │  Certified  :  Oracle OCI Gen AI Professional              │'),
-  ok( '  │                Meta Data Analyst — Coursera ✅              │'),
-  ok( '  │                Python Data Analytics ✅                     │'),
-  line('  │                More incoming — stay tuned 🔄               │'),
-  sys('  │                                                             │'),
-  sys(`  │  GitHub     :  github.com/Krishna09Bhardwaj                │`),
-  sys(`  │  LinkedIn   :  linkedin.com/in/krishna-bhardwaj-16306824a  │`),
-  sys('  │                                                             │'),
-  sys('  ├─────────────────────────────────────────────────────────────┤'),
-  {
-    id: uid(),
-    type: 'success',
-    content: '  │  [ 📄 Download Full Resume — PDF ]                          │',
-    isDownloadButton: true,
-  },
-  ok( '  │  Clicking download? Good taste.                             │'),
-  sys('  └─────────────────────────────────────────────────────────────┘'),
   blank(),
 ];

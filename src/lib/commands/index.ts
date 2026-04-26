@@ -8,7 +8,7 @@ import {
   WHOAMI_LINES,
   HIRE_LINES,
   SSH_LINES,
-  RESUME_LINES,
+  makeResumeLines,
   makeProjectListLines,
   makeOpenProjectLines,
   makeSkillsLines,
@@ -54,7 +54,7 @@ export const commandRegistry = new Map<string, CommandDef>([
     {
       description: 'Read a file  (cat resume | cat research | cat certifications)',
       execute: (args) => {
-        if (args[0] === 'resume') return RESUME_LINES;
+        if (args[0] === 'resume') return makeResumeLines();
         if (args[0] === 'research') return RESEARCH_LINES;
         if (args[0] === 'certifications') return makeCertLines();
         return [

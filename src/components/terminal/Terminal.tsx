@@ -123,7 +123,7 @@ export default function Terminal() {
       if (cmd === 'cat' && args[0] === 'resume') {
         const handler = commandRegistry.get('cat');
         if (handler) {
-          addLines(handler.execute(args, addLines));
+          addLines(handler.execute(args, addLines)); // makeResumeLines() inside
           // Trigger PDF download after a short delay
           setTimeout(() => {
             const a = document.createElement('a');
