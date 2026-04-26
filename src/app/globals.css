@@ -94,7 +94,7 @@ body::after {
     rgba(0, 0, 0, 0.03) 4px
   );
   pointer-events: none;
-  z-index: 9999;
+  z-index: 11;
 }
 
 /* Custom scrollbar */
