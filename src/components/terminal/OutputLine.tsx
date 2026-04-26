@@ -16,18 +16,18 @@ const typeStyle: Record<OutputLineType['type'], string> = {
   success: 'text-[#00ff88]',
 };
 
-const CLICKABLE_CMDS = [
-  'help', 'ls', 'whois', 'cat', 'open', 'contact', 'github',
-  'linkedin', 'clear', 'uptime', 'ping', 'whoami', 'ssh',
-  'sudo', 'matrix', 'history',
-];
-
+// Extract the full command from a help-menu line: "  cmd args    →  description"
+// Returns null for non-clickable lines (descriptions, blanks, placeholders with <>)
 function getClickableCmd(content: unknown): string | null {
   if (typeof content !== 'string') return null;
-  const match = content.match(/^\s{2,}([\w]+)/);
-  if (!match) return null;
-  const word = match[1].toLowerCase();
-  if (CLICKABLE_CMDS.includes(word)) return word;
+  // Help lines: 2+ leading spaces, command text, 2+ spaces, then "→"
+  const m = content.match(/^\s{2,}([a-zA-Z][a-zA-Z\s\-]*?)\s{2,}→/);
+  if (m) {
+    const cmd = m[1].trim().toLowerCase();
+    // Skip template placeholders like "open <id>"
+    if (cmd.includes('<') || cmd.includes('>')) return null;
+    return cmd;
+  }
   return null;
 }
 

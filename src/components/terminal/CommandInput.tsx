@@ -16,6 +16,7 @@ interface Props {
 
 export default function CommandInput({ onSubmit }: Props) {
   const [value, setValue] = useState('');
+  const [rawValue, setRawValue] = useState(''); // what the user actually typed
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [activeSuggestion, setActiveSuggestion] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,6 +51,7 @@ export default function CommandInput({ onSubmit }: Props) {
 
   const handleChange = (raw: string) => {
     setValue(raw);
+    setRawValue(raw);
     updateSuggestions(raw);
   };
 
@@ -58,27 +60,28 @@ export default function CommandInput({ onSubmit }: Props) {
     if (!safe) return;
     onSubmit(safe);
     setValue('');
+    setRawValue('');
     setSuggestions([]);
     setHistoryIndex(-1);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      if (suggestions.length > 0 && activeSuggestion >= 0) {
-        // if user pressed enter on an autocomplete hint, submit that
-        const sel = suggestions[activeSuggestion];
-        if (value.trim() !== sel) {
-          // only autocomplete if they haven't typed the full cmd yet
-        }
+      // If autocomplete is open, submit the highlighted suggestion
+      if (suggestions.length > 0) {
+        submit(suggestions[activeSuggestion]);
+      } else {
+        submit(value);
       }
-      submit(value);
       return;
     }
 
     if (e.key === 'Tab') {
       e.preventDefault();
       if (suggestions.length > 0) {
-        setValue(suggestions[activeSuggestion]);
+        const sel = suggestions[activeSuggestion];
+        setValue(sel);
+        setRawValue(sel);
         setSuggestions([]);
       }
       return;
@@ -87,7 +90,9 @@ export default function CommandInput({ onSubmit }: Props) {
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (suggestions.length > 0) {
-        setActiveSuggestion((p) => (p - 1 + suggestions.length) % suggestions.length);
+        const next = (activeSuggestion - 1 + suggestions.length) % suggestions.length;
+        setActiveSuggestion(next);
+        setValue(suggestions[next]);
         return;
       }
       const nextIdx = Math.min(historyIndex + 1, commandHistory.length - 1);
@@ -99,7 +104,9 @@ export default function CommandInput({ onSubmit }: Props) {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       if (suggestions.length > 0) {
-        setActiveSuggestion((p) => (p + 1) % suggestions.length);
+        const next = (activeSuggestion + 1) % suggestions.length;
+        setActiveSuggestion(next);
+        setValue(suggestions[next]);
         return;
       }
       const nextIdx = Math.max(historyIndex - 1, -1);
@@ -109,6 +116,8 @@ export default function CommandInput({ onSubmit }: Props) {
     }
 
     if (e.key === 'Escape') {
+      // Restore the raw typed value when dismissing suggestions
+      setValue(rawValue);
       setSuggestions([]);
       return;
     }
@@ -117,6 +126,7 @@ export default function CommandInput({ onSubmit }: Props) {
       e.preventDefault();
       onSubmit('clear');
       setValue('');
+      setRawValue('');
       setSuggestions([]);
     }
   };
