@@ -10,6 +10,7 @@ export interface OutputLine {
   isPrompt?: boolean;
   isDownloadButton?: boolean;
   isExternalLink?: string;
+  triggerCommand?: string; // clicking the line runs this command silently
 }
 
 export interface CommandDef {

@@ -54,6 +54,26 @@ const motionProps = (index: number) => ({
 });
 
 export default function OutputLineComponent({ line, index, onCommandClick }: Props) {
+  // ── Trigger-command line (e.g. Email → fires 'ssh connect') ──────────────
+  if (line.triggerCommand) {
+    return (
+      <motion.div {...motionProps(index)}>
+        <button
+          onClick={() => onCommandClick?.(line.triggerCommand!)}
+          className={[
+            'whitespace-pre-wrap font-mono text-sm leading-relaxed select-text',
+            typeStyle[line.type],
+            'cursor-pointer hover:brightness-150 hover:underline transition-all',
+          ].join(' ')}
+          style={{ background: 'transparent', border: 'none', padding: 0, textAlign: 'left', display: 'block', width: '100%' }}
+          type="button"
+        >
+          {line.content}
+        </button>
+      </motion.div>
+    );
+  }
+
   // ── Download button ───────────────────────────────────────────────────────
   if (line.isDownloadButton) {
     return (

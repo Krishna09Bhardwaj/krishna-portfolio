@@ -305,12 +305,15 @@ export const CONTACT_LINES: OutputLine[] = [
   blank(),
   sys('  CONTACT'),
   blank(),
-  line(`  Email    →  ${bio.email}`),
-  sys(`  GitHub   →  ${bio.github}`),
-  sys(`  LinkedIn →  ${bio.linkedin}`),
+  // Email → triggers 'ssh connect' (shows animation + opens mailto compose)
+  { id: uid(), type: 'success', content: `  Email    →  ${bio.email}`, triggerCommand: 'ssh connect' },
+  // GitHub / LinkedIn → open URLs directly
+  { id: uid(), type: 'system', content: `  GitHub   →  ${bio.github}`, isExternalLink: bio.github },
+  { id: uid(), type: 'system', content: `  LinkedIn →  ${bio.linkedin}`, isExternalLink: bio.linkedin },
+  // Phone → plain, not clickable
   line(`  Phone    →  ${bio.phone}`),
   blank(),
-  line("  Type 'ssh connect' to open the contact form."),
+  line("  Click Email above or type 'ssh connect' to send a message."),
   blank(),
 ];
 
