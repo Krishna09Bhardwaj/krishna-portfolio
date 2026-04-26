@@ -16,19 +16,26 @@ const typeStyle: Record<OutputLineType['type'], string> = {
   success: 'text-[#00ff88]',
 };
 
+// Only these first words are valid commands — prevents contact/label lines
+// (e.g. "Email →", "Phone →") from being treated as clickable commands.
+const VALID_CMD_STARTS = new Set([
+  'help', 'ls', 'whois', 'cat', 'open', 'contact', 'github',
+  'linkedin', 'clear', 'uptime', 'ping', 'whoami', 'ssh',
+  'sudo', 'matrix', 'history',
+]);
+
 // Extract the full command from a help-menu line: "  cmd args    →  description"
-// Returns null for non-clickable lines (descriptions, blanks, placeholders with <>)
+// Returns null for non-clickable lines (contact labels, blanks, placeholders).
 function getClickableCmd(content: unknown): string | null {
   if (typeof content !== 'string') return null;
   // Help lines: 2+ leading spaces, command text, 2+ spaces, then "→"
   const m = content.match(/^\s{2,}([a-zA-Z][a-zA-Z\s\-]*?)\s{2,}→/);
-  if (m) {
-    const cmd = m[1].trim().toLowerCase();
-    // Skip template placeholders like "open <id>"
-    if (cmd.includes('<') || cmd.includes('>')) return null;
-    return cmd;
-  }
-  return null;
+  if (!m) return null;
+  const cmd = m[1].trim().toLowerCase();
+  if (cmd.includes('<') || cmd.includes('>')) return null;
+  // Guard: first word must be a real command (blocks "Email", "Phone", etc.)
+  if (!VALID_CMD_STARTS.has(cmd.split(' ')[0])) return null;
+  return cmd;
 }
 
 function triggerDownload() {
