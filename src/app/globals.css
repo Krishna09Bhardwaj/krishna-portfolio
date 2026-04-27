@@ -326,3 +326,21 @@ body::after {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .kp-section { padding: 0 18px; }
+  .section-head { font-size: 18px; }
+
+  /* Hide ASCII art on small screens */
+  #about pre { display: none; }
+
+  /* Nav brand hidden on mobile */
+  nav > div > div:first-child { display: none; }
+}
+
+@media (max-width: 480px) {
+  nav > div { gap: 10px !important; padding: 8px 12px !important; }
+  nav > div > div:last-child { gap: 10px !important; }
+  nav > div > div:last-child button { font-size: 11px !important; }
+}
