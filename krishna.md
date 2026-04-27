@@ -167,3 +167,22 @@
 ### 🐛 Known Issues
 - public/resume.pdf is still a placeholder (329 bytes) — download button works but PDF is blank
   → ACTION REQUIRED: Replace /public/resume.pdf with your real resume
+
+---
+
+## Session 4 — 2026-04-27
+
+### ✅ Done
+- Added full design system CSS tokens (glassmorphism, typography, spacing, motion)
+- Replaced Three.js particle field with CSS scanlines + radial glow background
+- Added floating glass nav (IntersectionObserver active-link tracking)
+- Added glass title bar to terminal (traffic lights + filename)
+- Built 6 new scrollable sections: About, Skills, Experience, Projects, Certifications, Contact
+- All sections read from krishna.ts — update data once, all sections update
+- Scroll reveal animation (IntersectionObserver, 280ms ease)
+- Contact form: terminal-prompt style, mailto on submit, terminal log animation
+- Responsive: mobile nav, hidden ASCII art, 18px section padding
+- Google Fonts preconnect (JetBrains Mono + Inter)
+
+### ⏳ Pending
+- Replace public/resume.pdf with actual PDF
