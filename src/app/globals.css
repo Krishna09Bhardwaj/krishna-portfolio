@@ -135,7 +135,7 @@ body::after {
 .terminal-output {
   flex: 1;
   overflow-y: auto;
-  padding: 4.5rem 1.5rem 0.5rem; /* top: 72px clears the fixed nav */
+  padding: 1.25rem 1.5rem 0.5rem;
   scroll-behavior: smooth;
   overscroll-behavior: contain;
 }

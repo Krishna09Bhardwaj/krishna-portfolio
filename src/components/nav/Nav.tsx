@@ -11,7 +11,21 @@ const LINKS = [
 ];
 
 export default function Nav() {
-  const [active, setActive] = useState('');
+  const [active, setActive]       = useState('');
+  const [visible, setVisible]     = useState(false); // hidden while terminal fills viewport
+
+  useEffect(() => {
+    // Hide nav while terminal section is in view; show once user scrolls past it
+    const terminal = document.getElementById('terminal');
+    if (terminal) {
+      const obs = new IntersectionObserver(
+        ([entry]) => setVisible(!entry.isIntersecting),
+        { threshold: 0.1 },
+      );
+      obs.observe(terminal);
+      return () => obs.disconnect();
+    }
+  }, []);
 
   useEffect(() => {
     const observers = LINKS.map(({ id }) => {
@@ -30,7 +44,6 @@ export default function Nav() {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    // Immediately reveal so section is visible during scroll animation
     el.classList.add('visible');
     el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -39,9 +52,12 @@ export default function Nav() {
     <nav style={{
       position: 'fixed', top: 24, left: '50%', transform: 'translateX(-50%)',
       width: 'calc(100% - 48px)', maxWidth: 760, zIndex: 50,
+      opacity: visible ? 1 : 0,
+      pointerEvents: visible ? 'auto' : 'none',
+      transition: 'opacity 300ms ease',
     }}>
       <div style={{
-        background: 'rgba(10,14,23,0.70)',
+        background: 'rgba(10,14,23,0.80)',
         backdropFilter: 'blur(14px)',
         WebkitBackdropFilter: 'blur(14px)',
         border: '1px solid var(--glass-border)',
