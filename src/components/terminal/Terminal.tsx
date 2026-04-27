@@ -40,10 +40,11 @@ export default function Terminal() {
     triggerConfetti,
   } = useTerminalStore();
 
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const outputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = outputRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [lines]);
 
   const handleCommand = useCallback(
@@ -193,7 +194,7 @@ export default function Terminal() {
               </span>
             </div>
 
-            <div className="terminal-output">
+            <div className="terminal-output" ref={outputRef}>
               {lines.map((line, i) => (
                 <OutputLineComponent
                   key={line.id}
@@ -202,7 +203,6 @@ export default function Terminal() {
                   onCommandClick={handleCommand}
                 />
               ))}
-              <div ref={bottomRef} />
             </div>
             <QuickCommands onCommand={handleCommand} />
             <CommandInput onSubmit={handleCommand} />

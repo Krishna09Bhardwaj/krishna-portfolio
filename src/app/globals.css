@@ -135,7 +135,7 @@ body::after {
 .terminal-output {
   flex: 1;
   overflow-y: auto;
-  padding: 1.25rem 1.5rem 0.5rem;
+  padding: 4.5rem 1.5rem 0.5rem; /* top: 72px clears the fixed nav */
   scroll-behavior: smooth;
   overscroll-behavior: contain;
 }
@@ -325,6 +325,11 @@ body::after {
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* ── Section scroll-margin for fixed nav ─────────────────────────────────── */
+#about, #skills, #experience, #projects, #certifications, #contact {
+  scroll-margin-top: 88px;
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */

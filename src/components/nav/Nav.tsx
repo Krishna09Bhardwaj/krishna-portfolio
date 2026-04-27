@@ -30,7 +30,9 @@ export default function Nav() {
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+    // Immediately reveal so section is visible during scroll animation
+    el.classList.add('visible');
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (

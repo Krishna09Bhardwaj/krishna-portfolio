@@ -34,7 +34,7 @@ export default function About() {
   ];
 
   return (
-    <section id="about" ref={ref} className="reveal kp-section" style={{ paddingTop: 96 }}>
+    <section id="about" ref={ref} className="reveal kp-section" style={{ paddingTop: 24 }}>
       <div className="section-head">
         <span className="sigil">//</span>
         <span>about</span>
